@@ -34,23 +34,17 @@
             <h1 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 <span class="bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">TOOLS OTP CHANGE EMAIL</span>
             </h1>
-            <!-- DIUBAH: Teks deskripsi diperbarui -->
             <p class="text-sm text-slate-500 dark:text-gray-400 mb-6">Masukkan email untuk memantau OTP dari CapCut & Canva.</p>
 
             <div class="space-y-4">
-                <!-- DIHAPUS: Pilihan Layanan (CapCut/Canva) sudah tidak ada -->
-
-                <!-- Form input untuk satu email -->
                 <input type="email" id="email-input" class="w-full text-center text-sm bg-slate-100 dark:bg-gray-700 border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="contoh@mixmail.site">
                 
-                <!-- Tombol untuk memulai pengecekan -->
                 <button id="check-otp-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 text-sm flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
                     <span>Cek OTP</span>
                 </button>
             </div>
 
-            <!-- Area untuk menampilkan status dan hasil -->
             <div id="result-container" class="mt-6 min-h-[80px] bg-slate-100 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-center text-center">
                  <p id="status-text" class="text-slate-500 dark:text-gray-400 text-sm">Hasil akan muncul di sini...</p>
             </div>
@@ -60,11 +54,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Konfigurasi Aplikasi ---
     const POLLING_INTERVAL = 2000;
     const MONITORING_DURATION = 30000;
     const API_BASE_URL = "https://mixmail.site/api/messages";
 
+    // --- DIPERBARUI: Aturan Regex (otpPatterns) dibuat lebih spesifik ---
     const SERVICE_CONFIGS = {
         capcut: {
             name: "CapCut",
@@ -73,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
             otpPatterns: [
                 /Your verification code:\s*(\d{6})/gi,
                 /your verification code is\s*(\d{6})/gi,
-                /\b(\d{6})\b/g
+                /kode verifikasi.*?adalah\s*(\d{6})/gi,
+                /(\d{6})\s+is your CapCut verification code/gi
             ]
         },
         canva: {
@@ -83,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
             otpPatterns: [
                 /(?:kode\s+(?:anda|verifikasi)\s+adalah)\s*[::\s]*(\d{4,8})/gi,
                 /(?:your\s+(?:code|otp|verification\s+code)\s+is)\s*[::\s]*(\d{4,8})/gi,
-                /code|otp|kode\s*:[\s]*(\d{4,8})/gi,
-                /\b(\d{6})\b/g
+                /Gunakan kode\s+(\d{6})\s+untuk/gi,
+                /(\d{6})\s+is your Canva code/gi
             ]
         }
     };
@@ -220,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return [...otpMatches].filter(otp => otp && !/^(.)\1+$/.test(otp));
     }
 
-    // DIUBAH: Logika pengecekan multi-service
     async function pollInbox(email) {
         if (!currentMonitor) return;
         try {
@@ -236,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isNewMessage = !usedMessageIds.has(msg.id);
                 if (!isNewMessage) continue;
 
-                // Cek pesan terhadap setiap konfigurasi layanan yang ada
                 let detectedConfig = null;
                 if (isTargetEmail(msg, SERVICE_CONFIGS.capcut)) {
                     detectedConfig = SERVICE_CONFIGS.capcut;
