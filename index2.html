@@ -56,7 +56,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const POLLING_INTERVAL = 2000;
     const MONITORING_DURATION = 30000;
-    const API_BASE_URL = "https://mixmail.site/api/messages";
+    const API_BASE_URL = "https://mailgo.site/api/messages";
 
     // --- DIPERBARUI: Aturan Regex (otpPatterns) dibuat lebih spesifik ---
     const SERVICE_CONFIGS = {
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function pollInbox(email) {
         if (!currentMonitor) return;
         try {
-            const response = await fetch(`${API_BASE_URL}/${email}/dityageng`);
+            const response = await fetch(`${API_BASE_URL}/${email}/aurigo`);
             if (!response.ok) return;
             
             const messages = await response.json();
